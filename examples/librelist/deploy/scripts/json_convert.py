@@ -1,3 +1,4 @@
+from __future__ import print_function
 import sys
 sys.path.append(".")
 
@@ -10,7 +11,7 @@ import os
 
 def convert_queue(arg, dirname, names):
     if dirname.endswith("new"):
-        print dirname, names
+        print(dirname, names)
 
         jpath = dirname + "/../../json"
         if not os.path.exists(jpath):

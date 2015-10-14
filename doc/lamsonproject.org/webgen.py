@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from __future__ import with_statement
+from __future__ import print_function
 
 import os
 import sys
@@ -36,7 +37,7 @@ def process(fname):
             head, body = f.read().split('\n\n')
             body
         except:
-            print 'Invalid file format : ', fname
+            print('Invalid file format : ', fname)
 
 def parse(fname):
     with open(fname, 'r') as f:
@@ -49,7 +50,7 @@ def parse(fname):
                 headers[name.lower()] = unicode(value.strip())
             return headers, body
         except:
-            raise TypeError, "Invalid page file format for %s" % fname
+            raise TypeError("Invalid page file format for %s" % fname)
 
            
 def get_template(template):
@@ -81,7 +82,7 @@ def is_blog(current_dir, myself, headers, files):
 
         listing = []
         for f in without_self:
-            print "Doing blog", f
+            print("Doing blog", f)
             # load up the file and peel out the first few paragraphs
             content = os.path.join(current_dir, f)
             head, body = parse(content)
@@ -144,7 +145,7 @@ def parse_directory(current_dir, files, output_dir):
 
         format = determine_format(headers)
 
-        print "Processing %s" % inp
+        print("Processing %s" % inp)
 
         content = content_format(current_dir, inp, headers, files, format, body)
         
@@ -172,7 +173,7 @@ def main():
 
     x,y = rss.items[0], rss.items[-1]
     diff = x.pubDate - y.pubDate
-    print "diff!", diff.seconds, diff.days
+    print("diff!", diff.seconds, diff.days)
     rss.items.sort(cmp=lambda x,y: a_fucking_cmp_for_time(x,y))
     rss.write_xml(open("output/feed.xml", "w"))
 

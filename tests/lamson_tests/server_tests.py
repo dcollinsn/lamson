@@ -1,5 +1,6 @@
 # Copyright (C) 2008 Zed A. Shaw.  Licensed under the terms of the GPLv3.
 
+from __future__ import print_function
 from nose.tools import *
 from mock import *
 from lamson import server, queue, routing
@@ -56,7 +57,7 @@ def test_relay_resolve_relay_host(DNS_mxlookup):
 
 def test_relay_reply():
     relay = server.Relay("localhost", port=8899)
-    print "Relay: %r" % relay
+    print("Relay: %r" % relay)
 
     relay.reply(test_mail_request(), 'from@localhost', 'Test subject', 'Body')
 

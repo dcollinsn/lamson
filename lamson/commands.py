@@ -25,6 +25,7 @@ with *args.
 See python-modargs for more details.
 """
 
+from __future__ import print_function
 from lamson import server, utils, mail, routing, queue, encoding
 from modargs import args
 from pkg_resources import resource_stream
@@ -139,16 +140,16 @@ def stop_command(pid='./run/smtp.pid', KILL=False, ALL=False):
         pid_files = [pid]
 
         if not os.path.exists(pid):
-            print "PID file %s doesn't exist, maybe Lamson isn't running?" % pid
+            print("PID file %s doesn't exist, maybe Lamson isn't running?" % pid)
             sys.exit(1)
             return # for unit tests mocking sys.exit
 
-    print "Stopping processes with the following PID files: %s" % pid_files
+    print("Stopping processes with the following PID files: %s" % pid_files)
 
     for pid_f in pid_files:
         pid = open(pid_f).readline()
 
-        print "Attempting to stop lamson at pid %d" % int(pid)
+        print("Attempting to stop lamson at pid %d" % int(pid))
 
         try:
             if KILL:
@@ -157,8 +158,8 @@ def stop_command(pid='./run/smtp.pid', KILL=False, ALL=False):
                 os.kill(int(pid), signal.SIGHUP)
             
             os.unlink(pid_f)
-        except OSError, exc:
-            print "ERROR stopping Lamson on PID %d: %s" % (int(pid), exc)
+        except OSError as exc:
+            print("ERROR stopping Lamson on PID %d: %s" % (int(pid), exc))
 
 
 def restart_command(**options):
@@ -181,9 +182,9 @@ def status_command(pid='./run/smtp.pid'):
     """
     if os.path.exists(pid):
         pid = open(pid).readline()
-        print "Lamson running with PID %d" % int(pid)
+        print("Lamson running with PID %d" % int(pid))
     else:
-        print "Lamson not running."
+        print("Lamson not running.")
 
 
 def help_command(**options):
@@ -199,13 +200,13 @@ def help_command(**options):
     if "for" in options:
         help_text = args.help_for_command(lamson.commands, options['for'])
         if help_text:
-            print help_text
+            print(help_text)
         else:
             args.invalid_command_message(lamson.commands, exit_on_error=True)
     else:
-        print "Available commands:\n"
-        print ", ".join(args.available_commands(lamson.commands))
-        print "\nUse lamson help -for <command> to find out more."
+        print("Available commands:\n")
+        print(", ".join(args.available_commands(lamson.commands)))
+        print("\nUse lamson help -for <command> to find out more.")
 
 
 def queue_command(pop=False, get=False, keys=False, remove=False, count=False,
@@ -215,27 +216,27 @@ def queue_command(pop=False, get=False, keys=False, remove=False, count=False,
 
     lamson queue (-pop | -get | -remove | -count | -clear | -keys) -name run/queue
     """
-    print "Using queue: %r" % name
+    print("Using queue: %r" % name)
 
     inq = queue.Queue(name)
 
     if pop:
         key, msg = inq.pop()
         if key:
-            print "KEY: ", key
-            print msg
+            print("KEY: ", key)
+            print(msg)
     elif get:
-        print inq.get(get)
+        print(inq.get(get))
     elif remove:
         inq.remove(remove)
     elif count:
-        print "Queue %s contains %d messages" % (name, inq.count())
+        print("Queue %s contains %d messages" % (name, inq.count()))
     elif clear:
         inq.clear()
     elif keys:
-        print "\n".join(inq.keys())
+        print("\n".join(inq.keys()))
     else:
-        print "Give something to do.  Try lamson help -for queue to find out what."
+        print("Give something to do.  Try lamson help -for queue to find out what.")
         sys.exit(1)
         return # for unit tests mocking sys.exit
         
@@ -264,26 +265,26 @@ def routes_command(TRAILING=['config.testing'], path=os.getcwd(), test=""):
     for module in modules:
         __import__(module, globals(), locals())
 
-    print "Routing ORDER: ", routing.Router.ORDER
-    print "Routing TABLE: \n---"
+    print("Routing ORDER: ", routing.Router.ORDER)
+    print("Routing TABLE: \n---")
     for format in routing.Router.REGISTERED:
-        print "%r: " % format,
+        print("%r: " % format,)
         regex, functions = routing.Router.REGISTERED[format]
         for func in functions:
-            print "%s.%s " % (func.__module__, func.__name__),
+            print("%s.%s " % (func.__module__, func.__name__),)
             match = regex.match(test)
             if test and match:
                 test_case_matches.append((format, func, match))
 
-        print "\n---"
+        print("\n---")
 
     if test_case_matches:
-        print "\nTEST address %r matches:" % test
+        print("\nTEST address %r matches:" % test)
         for format, func, match in test_case_matches:
-            print "  %r %s.%s" % (format, func.__module__, func.__name__)
-            print "  -  %r" % (match.groupdict())
+            print("  %r %s.%s" % (format, func.__module__, func.__name__))
+            print("  -  %r" % (match.groupdict()))
     elif test:
-        print "\nTEST address %r didn't match anything." % test
+        print("\nTEST address %r didn't match anything." % test)
 
 
 
@@ -296,7 +297,7 @@ def gen_command(project=None, FORCE=False):
     project = project
 
     if os.path.exists(project) and not FORCE:
-        print "Project %s exists, delete it first." % project
+        print("Project %s exists, delete it first." % project)
         sys.exit(1)
         return
 
@@ -312,14 +313,14 @@ def gen_command(project=None, FORCE=False):
         if str(gen_f).endswith('/'):
             target = os.path.join(project, gen_f)
             if not os.path.exists(target):
-                print "mkdir: %s" % target
+                print("mkdir: %s" % target)
                 os.makedirs(target)
         else:
             target = os.path.join(project, gen_f)
             if os.path.exists(target): 
                 continue
 
-            print "copy: %s" % target
+            print("copy: %s" % target)
             out = open(target, 'w')
             out.write(prototype.read(gen_f))
             out.close()
@@ -340,8 +341,8 @@ def web_command(basedir=".", port=8888, host='127.0.0.1'):
 
     os.chdir(basedir)
     web = HTTPServer((host, port), SimpleHTTPRequestHandler)
-    print "Starting server on %s:%d out of directory %r" % (
-        host, port, basedir)
+    print("Starting server on %s:%d out of directory %r" % (
+        host, port, basedir))
     web.serve_forever()
 
 
@@ -364,14 +365,14 @@ def cleanse_command(input=None, output=None):
         try:
             mail = encoding.from_message(msg)
             outbox.add(encoding.to_string(mail))
-        except encoding.EncodingError, exc:
-            print "ERROR: ", exc
+        except encoding.EncodingError as exc:
+            print("ERROR: ", exc)
             error_count += 1
 
     outbox.close()
     inbox.close()
 
-    print "TOTAL ERRORS:", error_count
+    print("TOTAL ERRORS:", error_count)
 
 
 def blast_command(input=None, host='127.0.0.1', port=8823, debug=0):
@@ -397,14 +398,14 @@ def version_command():
 
     from lamson import version
 
-    print "Lamson-Version: ", version.VERSION['version']
-    print "Repository-Revision:", version.VERSION['rev'][0]
-    print "Repository-Hash:", version.VERSION['rev'][1]
-    print "Version-File:", version.__file__
-    print ""
-    print "Lamson is Copyright (C) Zed A. Shaw 2008-2009.  Licensed GPLv3."
-    print "If you didn't get a copy of the LICENSE contact the author at:\n"
-    print "   zedshaw@zedshaw.com"
-    print ""
-    print "Have fun."
+    print("Lamson-Version: ", version.VERSION['version'])
+    print("Repository-Revision:", version.VERSION['rev'][0])
+    print("Repository-Hash:", version.VERSION['rev'][1])
+    print("Version-File:", version.__file__)
+    print("")
+    print("Lamson is Copyright (C) Zed A. Shaw 2008-2009.  Licensed GPLv3.")
+    print("If you didn't get a copy of the LICENSE contact the author at:\n")
+    print("   zedshaw@zedshaw.com")
+    print("")
+    print("Have fun.")
 

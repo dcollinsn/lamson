@@ -1,3 +1,4 @@
+from __future__ import print_function
 from lamson import queue
 
 
@@ -12,4 +13,4 @@ def attach_headers(message, user_id, post_name, domain):
 def defer_to_queue(message):
     index_q = queue.Queue("run/posts")  # use a diff queue?
     index_q.push(message)
-    print "run/posts count after dever", index_q.count()
+    print("run/posts count after dever", index_q.count())

@@ -1,9 +1,12 @@
+from __future__ import unicode_literals
+import six
 from django.db import models
 from datetime import datetime
 from email.utils import formataddr
 
 # Create your models here.
 
+@six.python_2_unicode_literals
 class Confirmation(models.Model):
     from_address = models.EmailField()
     request_date = models.DateTimeField(auto_now_add=True)
@@ -11,7 +14,7 @@ class Confirmation(models.Model):
     pending_message_id = models.CharField(max_length=200)
     list_name = models.CharField(max_length=200)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.from_address
 
 class UserState(models.Model):
@@ -20,7 +23,7 @@ class UserState(models.Model):
     from_address = models.EmailField()
     state = models.CharField(max_length=200)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s:%s (%s)" % (self.state_key, self.from_address, self.state)
 
 class MailingList(models.Model):
@@ -31,7 +34,7 @@ class MailingList(models.Model):
     similarity_pri = models.CharField(max_length=50)
     similarity_sec = models.CharField(max_length=50, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -42,7 +45,7 @@ class Subscription(models.Model):
     mailing_list = models.ForeignKey(MailingList)
     enabled = models.BooleanField(default=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return '"%s" <%s>' % (self.subscriber_name, self.subscriber_address)
 
     def subscriber_full_address(self):

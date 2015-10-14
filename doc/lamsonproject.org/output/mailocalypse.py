@@ -1,3 +1,4 @@
+from __future__ import print_function
 import email
 from email.header import make_header, decode_header
 from string import capwords
@@ -54,7 +55,7 @@ def bless_headers(msg):
 
 def dump_headers(headers):
     for h in headers:
-        print h, headers[h]
+        print(h, headers[h])
 
 def mail_load_cleanse(msg_file):
     global ALL_MAIL
@@ -76,14 +77,14 @@ def mail_load_cleanse(msg_file):
                     guts = uguts.encode("utf-8")
                 else:
                     guts = guts.encode("utf-8")
-            except UnicodeDecodeError, exc:
-                print >> sys.stderr, "CONFLICTED CHARSET:", exc, part.get_charsets()
+            except UnicodeDecodeError as exc:
+                print("CONFLICTED CHARSET:", exc, part.get_charsets(), file=sys.stderr)
                 BAD_MAIL += 1
-            except LookupError, exc:
-                print >> sys.stderr, "UNKNOWN CHARSET:", exc, part.get_charsets()
+            except LookupError as exc:
+                print("UNKNOWN CHARSET:", exc, part.get_charsets(), file=sys.stderr)
                 BAD_MAIL += 1
-            except Exception, exc:
-                print >> sys.stderr, "WEIRDO ERROR", exc, part.get_charsets()
+            except Exception as exc:
+                print("WEIRDO ERROR", exc, part.get_charsets(), file=sys.stderr)
                 BAD_MAIL += 1
 
 
@@ -95,14 +96,14 @@ try:
     mb = mailbox.Maildir(sys.argv[1])
     len(mb)  # need this to make the maildir try to read the directory and fail
 except OSError:
-    print "NOT A MAILDIR, TRYING MBOX"
+    print("NOT A MAILDIR, TRYING MBOX")
     mb = mailbox.mbox(sys.argv[1])
 
 if not mb:
-    print "NOT A MAILDIR OR MBOX, SORRY"
+    print("NOT A MAILDIR OR MBOX, SORRY")
 
 for key in mb.keys():
     mail_load_cleanse(mb.get_file(key))
 
-print >> sys.stderr, "ALL", ALL_MAIL
-print >> sys.stderr, "BAD", BAD_MAIL
+print("ALL", ALL_MAIL, file=sys.stderr)
+print("BAD", BAD_MAIL, file=sys.stderr)

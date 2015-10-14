@@ -20,7 +20,7 @@ The spelling function will use PyEnchant to spell check a string.  If it finds
 any errors it prints them out, and returns False.
 """
 
-
+from __future__ import print_function
 from lamson import server, utils, routing, mail
 from lamson.queue import Queue
 from nose.tools import assert_equal
@@ -45,18 +45,18 @@ def spelling(file_name, contents, language="en_US"):
         from enchant.checker import SpellChecker 
         from enchant.tokenize import EmailFilter, URLFilter 
     except:
-        print "Failed to load PyEnchant.  Make sure it's installed and lamson spell works."
+        print("Failed to load PyEnchant.  Make sure it's installed and lamson spell works.")
         return True
 
     failures = 0
     chkr = SpellChecker(language, filters=[EmailFilter, URLFilter]) 
     chkr.set_text(contents)
     for err in chkr:
-        print "%s: %s \t %r" % (file_name, err.word, contents[err.wordpos-20:err.wordpos+20])
+        print("%s: %s \t %r" % (file_name, err.word, contents[err.wordpos-20:err.wordpos+20]))
         failures += 1
 
     if failures:
-        print "You have %d spelling errors in %s.  Run lamson spell.." % (failures, file_name)
+        print("You have %d spelling errors in %s.  Run lamson spell.." % (failures, file_name))
         return False
     else:
         return True
@@ -140,11 +140,11 @@ class TestConversation(object):
         if expect:
             msg = delivered(expect)
             if not msg:
-                print "MESSAGE IN QUEUE:"
+                print("MESSAGE IN QUEUE:")
                 inq = queue()
                 for key in inq.keys():
-                    print "-----"
-                    print inq.get(key)
+                    print("-----")
+                    print(inq.get(key))
 
             assert msg, "Expected %r when sending to %r with '%s:%s' message." % (expect, 
                                           To, self.Subject or Subject, Body)

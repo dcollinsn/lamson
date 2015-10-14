@@ -105,7 +105,7 @@ def test_to_message_from_message_with_spam():
                 for i, part in enumerate(m.parts):
                     assert part.body == m2.parts[i].body, "Part %d isn't the same: %r \nvs\n. %r" % (i, part.body, m2.parts[i].body)
             total += 1
-        except encoding.EncodingError, exc:
+        except encoding.EncodingError as exc:
             fails += 1
 
     assert fails/total < 0.01, "There were %d failures out of %d total." % (fails, total)
