@@ -177,7 +177,7 @@ class SMTPReceiver(smtpd.SMTPServer):
                 kwargs={'timeout':0.1, 'use_poll':True})
         self.poller.start()
 
-    def process_message(self, Peer, From, To, Data):
+    def process_message(self, Peer, From, To, Data, **kwargs):
         """
         Called by smtpd.SMTPServer when there's a message received.
         """
@@ -243,14 +243,14 @@ class QueueReceiver(object):
                     self.process_message(msg)
                     logging.debug("Removed %r key from queue.", key)
 
-	        inq.remove(key)
+                inq.remove(key)
 
             if one_shot: 
                 return
             else:
                 time.sleep(self.sleep)
 
-    def process_message(self, msg):
+    def process_message(self, msg, **kwargs):
         """
         Exactly the same as SMTPReceiver.process_message but just designed for the queue's
         quirks.

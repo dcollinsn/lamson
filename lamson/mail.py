@@ -30,7 +30,7 @@ def _decode_header_randomness(addr):
         return set()
     elif isinstance(addr, list):
         return set(parseaddr(a.lower())[1] for a in addr)
-    elif isinstance(addr, basestring):
+    elif isinstance(addr, str):
         return set([parseaddr(addr.lower())[1]])
     else:
         raise encoding.EncodingError("Address must be a string or a list not: %r", type(addr))

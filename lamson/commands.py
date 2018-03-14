@@ -17,7 +17,7 @@ list_command without clashing with list().
 You will also notice that commands which take trailing positional
 arguments give a TRAILING=[] or TRAILING=None (if it's required).
 This is done instead of *args because we need to use None to indicate
-that this command requires positional arguments.  TRAILING=[] is 
+that this command requires positional arguments.  TRAILING=[] is
 like saying they are optional (but expected), and TRAILING=None is
 like saying they are required.  You can't (afaik) do TRAILING=None
 with *args.
@@ -44,7 +44,7 @@ def log_command(port=8825, host='127.0.0.1', chroot=False,
                FORCE=False, debug=False):
     """
     Runs a logging only server on the given hosts and port.  It logs
-    each message it receives and also stores it to the run/queue 
+    each message it receives and also stores it to the run/queue
     so that you can make sure it was received in testing.
 
     lamson log -port 8825 -host 127.0.0.1 \\
@@ -70,11 +70,11 @@ def send_command(port=8825, host='127.0.0.1', username=False, password=False,
     """
     Sends an email to someone as a test message.
     See the sendmail command for a sendmail replacement.
-    
+
     lamson send -port 8825 -host 127.0.0.1 -debug 1 \\
             -sender EMAIL -to EMAIL -subject STR -body STR -attach False'
 
-    There is also a username, password, and starttls option for those 
+    There is also a username, password, and starttls option for those
     who need it.
     """
     message = mail.MailResponse(From=sender,
@@ -126,7 +126,7 @@ def start_command(pid='./run/smtp.pid', FORCE=False, chroot=False, chdir=".",
 def stop_command(pid='./run/smtp.pid', KILL=False, ALL=False):
     """
     Stops a running lamson server.  Give -KILL True to have it
-    stopped violently.  The PID file is removed after the 
+    stopped violently.  The PID file is removed after the
     signal is sent.  Give -ALL the name of a run directory and
     it will stop all pid files it finds there.
 
@@ -156,7 +156,7 @@ def stop_command(pid='./run/smtp.pid', KILL=False, ALL=False):
                 os.kill(int(pid), signal.SIGKILL)
             else:
                 os.kill(int(pid), signal.SIGHUP)
-            
+
             os.unlink(pid_f)
         except OSError as exc:
             print("ERROR stopping Lamson on PID %d: %s" % (int(pid), exc))
@@ -189,7 +189,7 @@ def status_command(pid='./run/smtp.pid'):
 
 def help_command(**options):
     """
-    Prints out help for the commands. 
+    Prints out help for the commands.
 
     lamson help
 
@@ -239,7 +239,7 @@ def queue_command(pop=False, get=False, keys=False, remove=False, count=False,
         print("Give something to do.  Try lamson help -for queue to find out what.")
         sys.exit(1)
         return # for unit tests mocking sys.exit
-        
+
 
 def routes_command(TRAILING=['config.testing'], path=os.getcwd(), test=""):
     """
@@ -250,7 +250,7 @@ def routes_command(TRAILING=['config.testing'], path=os.getcwd(), test=""):
 
     lamson routes -path $PWD -- config.testing -test ""
 
-    It defaults to running your config.testing to load the routes. 
+    It defaults to running your config.testing to load the routes.
     If you want it to run the config.boot then give that instead:
 
     lamson routes -- config.boot
@@ -317,7 +317,7 @@ def gen_command(project=None, FORCE=False):
                 os.makedirs(target)
         else:
             target = os.path.join(project, gen_f)
-            if os.path.exists(target): 
+            if os.path.exists(target):
                 continue
 
             print("copy: %s" % target)
@@ -337,7 +337,7 @@ def web_command(basedir=".", port=8888, host='127.0.0.1'):
     This command doesn't exit so you can view the logs it prints out.
     """
     from BaseHTTPServer import HTTPServer
-    from SimpleHTTPServer import SimpleHTTPRequestHandler 
+    from SimpleHTTPServer import SimpleHTTPRequestHandler
 
     os.chdir(basedir)
     web = HTTPServer((host, port), SimpleHTTPRequestHandler)
