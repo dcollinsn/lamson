@@ -266,7 +266,7 @@ def to_message(mail):
 
     try:
         out = MIMEPart(ctype, **params)
-    except TypeError, exc:
+    except TypeError as exc:
         raise EncodingError("Content-Type malformed, not allowed: %r; %r (Python ERROR: %s" %
                             (ctype, params, exc.message))
 
@@ -288,14 +288,14 @@ def to_message(mail):
 def to_string(mail, envelope_header=False):
     """Returns a canonicalized email string you can use to send or store
     somewhere."""
-    msg = to_message(mail).as_string(envelope_header)
+    msg = to_message(mail).as_string(envelope_header).decode('utf-8')
     assert "From nobody" not in msg
     return msg
 
 
 def from_string(data):
     """Takes a string, and tries to clean it up into a clean MailBase."""
-    return from_message(email.message_from_string(data))
+    return from_message(email.message_from_string(data.decode('utf-8')))
 
 
 def to_file(mail, fileobj):
@@ -395,7 +395,7 @@ def guess_encoding_and_decode(original, data, errors=DEFAULT_ERROR_HANDLING):
             raise EncodingError("Header claimed %r charset, but detection found none.  Decoding failed." % original)
 
         return data.decode(charset["encoding"], errors)
-    except UnicodeError, exc:
+    except UnicodeError as exc:
         raise EncodingError("Header lied and claimed %r charset, guessing said "
                             "%r charset, neither worked so this is a bad email: "
                             "%s." % (original, charset, exc))
@@ -403,7 +403,7 @@ def guess_encoding_and_decode(original, data, errors=DEFAULT_ERROR_HANDLING):
 
 def attempt_decoding(charset, dec):
     try:
-        if isinstance(dec, unicode):
+        if isinstance(dec, str):
             # it's already unicode so just return it
             return dec
         else:
@@ -473,13 +473,13 @@ def _parse_charset_header(data):
     try:
         while True:
             if not oddness:
-                left, enc_header, enc_data, continued = scanner.next()
+                left, enc_header, enc_data, continued = scanner.__next__()
             else:
                 left, enc_header, enc_data, continued = oddness
                 oddness = None
 
             while continued:
-                l, eh, ed, continued = scanner.next()
+                l, eh, ed, continued = scanner.__next__()
                
                 if not eh:
                     assert not ed, "Parsing error, give Zed this: %r" % data

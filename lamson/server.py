@@ -177,7 +177,7 @@ class SMTPReceiver(smtpd.SMTPServer):
                 kwargs={'timeout':0.1, 'use_poll':True})
         self.poller.start()
 
-    def process_message(self, Peer, From, To, Data):
+    def process_message(self, Peer, From, To, Data, **kwargs):
         """
         Called by smtpd.SMTPServer when there's a message received.
         """
@@ -185,7 +185,7 @@ class SMTPReceiver(smtpd.SMTPServer):
         try:
             logging.debug("Message received from Peer: %r, From: %r, to To %r." % (Peer, From, To))
             routing.Router.deliver(mail.MailRequest(Peer, From, To, Data))
-        except SMTPError, err:
+        except SMTPError as err:
             # looks like they want to return an error, so send it out
             return str(err)
             undeliverable_message(Data, "Handler raised SMTPError on purpose: %s" % err)
@@ -243,14 +243,14 @@ class QueueReceiver(object):
                     self.process_message(msg)
                     logging.debug("Removed %r key from queue.", key)
 
-	        inq.remove(key)
+                inq.remove(key)
 
             if one_shot: 
                 return
             else:
                 time.sleep(self.sleep)
 
-    def process_message(self, msg):
+    def process_message(self, msg, **kwargs):
         """
         Exactly the same as SMTPReceiver.process_message but just designed for the queue's
         quirks.
@@ -263,7 +263,7 @@ class QueueReceiver(object):
 
             logging.debug("Message received from Peer: %r, From: %r, to To %r." % (Peer, From, To))
             routing.Router.deliver(msg)
-        except SMTPError, err:
+        except SMTPError as err:
             # looks like they want to return an error, so send it out
             logging.exception("Raising SMTPError when running in a QueueReceiver is unsupported.")
             undeliverable_message(msg.original, err.message)

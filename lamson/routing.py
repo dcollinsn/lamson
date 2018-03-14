@@ -52,6 +52,7 @@ but instead on a simple function, so it shouldn't be combined with the others.
 
 from __future__ import with_statement
 from functools import wraps
+from importlib import reload
 import re
 import logging
 import sys

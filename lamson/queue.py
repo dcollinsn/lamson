@@ -16,7 +16,7 @@ import logging
 
 # we calculate this once, since the hostname shouldn't change for every
 # email we put in a queue
-HASHED_HOSTNAME = hashlib.md5(socket.gethostname()).hexdigest()
+HASHED_HOSTNAME = hashlib.md5(socket.gethostname().encode('utf-8')).hexdigest()
 
 class SafeMaildir(mailbox.Maildir):
     def _create_tmp(self):
@@ -26,12 +26,12 @@ class SafeMaildir(mailbox.Maildir):
         path = os.path.join(self._path, 'tmp', uniq)
         try:
             os.stat(path)
-        except OSError, e:
+        except OSError as e:
             if e.errno == errno.ENOENT:
                 mailbox.Maildir._count += 1
                 try:
                     return mailbox._create_carefully(path)
-                except OSError, e:
+                except OSError as e:
                     if e.errno != errno.EEXIST:
                         raise
             else:
@@ -122,7 +122,7 @@ class Queue(object):
             else:
                 try:
                     msg = self.get(key)
-                except QueueError, exc:
+                except QueueError as exc:
                     raise exc
                 finally:
                     self.remove(key)
