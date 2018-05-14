@@ -1,5 +1,5 @@
 """
-Lamson takes the policy that email it receives is most likely complete garbage 
+Lamson takes the policy that email it receives is most likely complete garbage
 using bizarre pre-Unicode formats that are irrelevant and unnecessary in today's
 modern world.  These emails must be cleansed of their unholy stench of
 randomness and turned into something nice and clean that a regular Python
@@ -54,7 +54,7 @@ things email clients do to the world.  The output rule of Lamson is:
     NOT BE SENT.
 
 Following these simple rules, this module does the work of converting email
-to the canonical format and sending the canonical format.  The code is 
+to the canonical format and sending the canonical format.  The code is
 probably the most complex part of Lamson since the job it does is difficult.
 
 Test results show that Lamson can safely canonicalize most email from any
@@ -90,7 +90,7 @@ INDENT_REGEX = re.compile(r"\n\s+")
 VALUE_IS_EMAIL_ADDRESS = lambda v: '@' in v
 ADDRESS_HEADERS_WHITELIST = ['From', 'To', 'Delivered-To', 'Cc', 'Bcc']
 
-class EncodingError(Exception): 
+class EncodingError(Exception):
     """Thrown when there is an encoding error."""
     pass
 
@@ -104,7 +104,7 @@ class MailBase(object):
         self.headers = dict(items)
         self.parts = []
         self.body = None
-        self.content_encoding = {'Content-Type': (None, {}), 
+        self.content_encoding = {'Content-Type': (None, {}),
                                  'Content-Disposition': (None, {}),
                                  'Content-Transfer-Encoding': (None, {})}
 
@@ -232,7 +232,7 @@ def from_message(message):
     for k in message.keys():
         if normalize_header(k) not in mail.content_encoding:
             mail[k] = header_from_mime_encoding(message[k])
-  
+
     decode_message_body(mail, message)
 
     if message.is_multipart():
@@ -247,7 +247,7 @@ def from_message(message):
 
 def to_message(mail):
     """
-    Given a MailBase message, this will construct a MIMEPart 
+    Given a MailBase message, this will construct a MIMEPart
     that is canonicalized for use with the Python email API.
     """
     ctype, params = mail.content_encoding['Content-Type']
@@ -377,7 +377,7 @@ def header_to_mime_encoding(value, not_email=False):
 
 
 def header_from_mime_encoding(header):
-    if header is None: 
+    if header is None:
         return header
     elif type(header) == list:
         return [properly_decode_header(h) for h in header]
@@ -418,9 +418,9 @@ def attempt_decoding(charset, dec):
 
 def apply_charset_to_header(charset, encoding, data):
     if encoding == 'b' or encoding == 'B':
-        dec = email.base64mime.decode(data.encode('ascii'))
+        dec = email.base64mime.decode(data)
     elif encoding == 'q' or encoding == 'Q':
-        dec = email.quoprimime.header_decode(data.encode('ascii'))
+        dec = email.quoprimime.header_decode(data)
     else:
         raise EncodingError("Invalid header encoding %r should be 'Q' or 'B'." % encoding)
 
@@ -445,7 +445,7 @@ def _tokenize(data, next):
     enc_data = None
 
     left, enc_header, next = _match(data, ENCODING_REGEX, next)
-   
+
     if next != -1:
         enc_data, _, next = _match(data, ENCODING_END_REGEX, next)
 
@@ -480,7 +480,7 @@ def _parse_charset_header(data):
 
             while continued:
                 l, eh, ed, continued = scanner.__next__()
-               
+
                 if not eh:
                     assert not ed, "Parsing error, give Zed this: %r" % data
                     oddness = (" " + l.lstrip(), eh, ed, continued)
@@ -494,7 +494,7 @@ def _parse_charset_header(data):
 
             if left:
                 yield attempt_decoding('ascii', left)
-                       
+
             if enc_header:
                 yield apply_charset_to_header(enc_header[0], enc_header[1], enc_data)
 
